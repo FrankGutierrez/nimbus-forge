@@ -18,7 +18,7 @@ spec:
     count: ${var.elasticsearch_node_count}
     config:
       # most Elasticsearch configuration parameters are possible to set, e.g: node.attr.attr_name: attr_value
-      node.roles: ["master", "data", "ingest", "ml"]
+      node.roles: ["master", "data", "ingest", "ml", "remote_cluster_client"]
       # this allows ES to run on nodes even if their vm.max_map_count has not been increased, at a performance cost
       node.store.allow_mmap: ${var.elasticsearch_node_store_allow_mmap}
       # uncomment the lines below to use the zone attribute from the node labels

@@ -1,5 +1,5 @@
 resource "kubectl_manifest" "kibana" {
-  depends_on = [kubectl_manifest.elasticsearch_cluster]
+  depends_on = [kubectl_manifest.elasticsearch_cluster, kubectl_manifest.elastic-package-registry_service]
   yaml_body = <<YAML
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
