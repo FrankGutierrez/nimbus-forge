@@ -19,17 +19,18 @@ terraform {
 
 provider "kubernetes" {
   # Configuration options
-  host = "https://kubernetes.docker.internal:6443"
-  config_context_cluster = "docker-desktop"
-  config_path = "~/.kube/config"
+  host = var.kube_config_host
+  config_context_cluster = var.kube_config_context_cluster
+  config_path = var.kube_config_path
 }
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config"
+    config_path = var.kube_config_path
   }
 }
 provider "kubectl" {
-  config_path = "~/.kube/config"
-  config_context_cluster = "docker-desktop"
-  host = "https://kubernetes.docker.internal:6443"
+  config_path = var.kube_config_path
+  config_context_cluster = var.kube_config_context_cluster
+  host = var.kube_config_host
+  apply_retry_count = 5
 }

@@ -1,6 +1,25 @@
 # DO NOT MODIFIY
 # Put any changes or customizations in terraform.tfvars
 
+###################### Provider Variables ######################
+variable "kube_config_path" {
+  description   = "Path to kubeconfig"
+  type          = string
+  default       = "~/.kube/config"
+}
+
+variable "kube_config_context_cluster" {
+  description   = "Context of the K8s cluster"
+  type          = string
+  default       = "docker-desktop"
+}
+
+variable "kube_config_host" {
+  description   = "URL to K8s cluster"
+  type          = string
+  default       = "https://kubernetes.docker.internal:6443"
+}
+
 
 ###################### Registry Configuration Variables ######################
 variable "registry_namespace" {

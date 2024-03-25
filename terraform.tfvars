@@ -1,5 +1,10 @@
 ######################## Terraform Variables ###################################
 
+##### Provider Settings #####
+kube_config_path = "~/.kube/config"
+kube_config_context_cluster = "docker-desktop"
+kube_config_host = "https://kubernetes.docker.internal:6443"
+
 ##### Elastic Registry Settings #####
 
 # registry_namespace = "elastic-registry"
