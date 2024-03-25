@@ -85,6 +85,12 @@ variable "eck_operator_pull_policy" {
 
 
 ###################### Elasticsearch Variables ######################
+variable "elasticsearch_elastic_user_password" {
+  description   = "Default password for user elastic"
+  type          = string
+  default       = "ChangeMeElastic123"
+}
+
 variable "elasticsearch_name" {
   description   = "Name of Elasticsearch deployment"
   type          = string

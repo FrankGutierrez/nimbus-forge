@@ -102,3 +102,29 @@ spec:
   #       secretName: my-cert
 YAML
 }
+
+resource "kubectl_manifest" "elasticsearch_default_user_password" {
+  depends_on = [kubectl_manifest.elasticsearch_cluster]
+  yaml_body = <<YAML
+kind: Secret
+apiVersion: v1
+metadata:
+  name: ${var.elasticsearch_name}-es-elastic-user
+  namespace: ${var.eck_namespace}
+  labels:
+    common.k8s.elastic.co/type: elasticsearch
+    eck.k8s.elastic.co/credentials: 'true'
+    eck.k8s.elastic.co/owner-kind: Elasticsearch
+    eck.k8s.elastic.co/owner-name: ${var.elasticsearch_name}
+    eck.k8s.elastic.co/owner-namespace: ${var.eck_namespace}
+    elasticsearch.k8s.elastic.co/cluster-name: ${var.elasticsearch_name}
+  managedFields:
+    - manager: elastic-operator
+      operation: Update
+      apiVersion: v1
+      fieldsType: FieldsV1
+data:
+  elastic: ${base64encode(var.elasticsearch_elastic_user_password)}
+type: Opaque
+YAML
+}

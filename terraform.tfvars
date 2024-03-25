@@ -20,6 +20,7 @@ elastic_artifact_registry_image_pull_policy = "Never"  # Set to Never for Air-Ga
 eck_operator_pull_policy = "Never"
 
 ##### Elasticsearch Settings #####
+# elasticsearch_elastic_user_password = "ChangeMeElastic123"
 # elasticsearch_name = "elasticsearch-sample"
 # elasticsearch_image = "docker.elastic.co/elasticsearch/elasticsearch:8.12.2"
 
