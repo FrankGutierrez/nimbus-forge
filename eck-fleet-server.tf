@@ -55,74 +55,6 @@ spec:
 YAML
 }
 
-# resource "kubectl_manifest" "fleet-server-kibana" {
-#     yaml_body = <<YAML
-# apiVersion: kibana.k8s.elastic.co/v1
-# kind: Kibana
-# metadata:
-#   name: ${var.kibana_name}
-#   namespace: ${var.eck_namespace}
-# spec:
-#   version: ${var.elastic_version}
-#   count: ${var.kibana_node_count}
-#   elasticsearchRef:
-#     name: ${var.elasticsearch_name}
-#   config:
-#     xpack.fleet.agents.elasticsearch.hosts: ["https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
-#     xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_name}-agent-http.${var.eck_namespace}.svc:8220"]
-#     xpack.fleet.packages:
-#       - name: system
-#         version: latest
-#       - name: elastic_agent
-#         version: latest
-#       - name: fleet_server
-#         version: latest
-#     xpack.fleet.agentPolicies:
-#       - name: Fleet Server on ECK policy
-#         id: eck-fleet-server
-#         namespace: ${var.eck_namespace}
-#         monitoring_enabled:
-#           - logs
-#           - metrics
-#         unenroll_timeout: 900
-#         package_policies:
-#         - name: fleet_server-1
-#           id: fleet_server-1
-#           package:
-#             name: fleet_server
-#       - name: Elastic Agent on ECK policy
-#         id: eck-agent
-#         namespace: ${var.eck_namespace}
-#         monitoring_enabled:
-#           - logs
-#           - metrics
-#         unenroll_timeout: 900
-#         package_policies:
-#           - name: system-1
-#             id: system-1
-#             package:
-#               name: system
-# YAML
-# }
-
-# resource "kubectl_manifest" "fleet-server-elasticsearch" {
-#     yaml_body = <<YAML
-# apiVersion: elasticsearch.k8s.elastic.co/v1
-# kind: Elasticsearch
-# metadata:
-#   name: ${var.elasticsearch_name}
-#   namespace: ${var.eck_namespace}
-# spec:
-#   version: ${var.elastic_version}
-#   image: ${var.elasticsearch_image}
-#   nodeSets:
-#   - name: default
-#     count: ${var.elasticsearch_node_count}
-#     config:
-#       node.store.allow_mmap: ${var.elasticsearch_node_store_allow_mmap}
-# YAML
-# }
-
 resource "kubectl_manifest" "fleet-server-cluster-role" {
     depends_on = [kubectl_manifest.elastic-agent]
     yaml_body = <<YAML
@@ -188,5 +120,39 @@ roleRef:
   kind: ClusterRole
   name: elastic-agent
   apiGroup: rbac.authorization.k8s.io
+YAML
+}
+
+resource "kubectl_manifest" "elastic-fleet_server_ingress" {
+  depends_on = [kubectl_manifest.fleet-server-clusterRoleBinding]
+  yaml_body = <<YAML
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: elastic-fleet-server-ingress
+  namespace: ${var.eck_namespace}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/issuer: selfsigned
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ${var.fleet_server_ingress_hostname}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ${var.fleet_server_name}-agent-http
+                port:
+                  number: 8220
+  # Enable for Air-Gapped EPR
+  tls:
+   - secretName: ${var.fleet_server_name}-agent-http-certs-public
+     hosts:
+        - ${var.fleet_server_ingress_hostname}       
 YAML
 }

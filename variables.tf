@@ -122,6 +122,12 @@ variable "elasticsearch_image" {
   default       = "docker.elastic.co/elasticsearch/elasticsearch:8.12.2"
 }
 
+variable "elasticsearch_ingress_hostname" {
+  description   = "Elasticsearch ingress Hostname"
+  type          = string
+  default       = "es.localhost"
+}
+
 variable "elasticsearch_node_count" {
   description   = "Number of Elasticsearch Nodes"
   type          = number
@@ -170,4 +176,10 @@ variable "elastic_agent_name" {
   description   = "Name of Elastic Agent deployment"
   type          = string
   default       = "eck-elastic-agent"
+}
+
+variable "fleet_server_ingress_hostname" {
+  description   = "Fleet Server ingress Hostname"
+  type          = string
+  default       = "fleet-server.localhost"
 }
