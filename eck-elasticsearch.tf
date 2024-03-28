@@ -17,66 +17,32 @@ spec:
   - name: default
     count: ${var.elasticsearch_node_count}
     config:
-      # most Elasticsearch configuration parameters are possible to set, e.g: node.attr.attr_name: attr_value
-      node.roles: ["master", "data", "ingest", "ml", "remote_cluster_client"]
-      # this allows ES to run on nodes even if their vm.max_map_count has not been increased, at a performance cost
+      #node.roles: ["master", "data", "ingest", "ml", "remote_cluster_client", "transform", "data_content", "data_hot", "data_warm", "data_cold", "data_frozen"]
       node.store.allow_mmap: ${var.elasticsearch_node_store_allow_mmap}
-      # uncomment the lines below to use the zone attribute from the node labels
-      #cluster.routing.allocation.awareness.attributes: k8s_node_name,zone
-      #node.attr.zone: $${ZONE}
     podTemplate:
       metadata:
         labels:
-          # additional labels for pods
           deployment: terraform
       spec:
-        # this changes the kernel setting on the node to allow ES to use mmap
-        # if you uncomment this init container you will likely also want to remove the
-        # "node.store.allow_mmap: false" setting above
-        # initContainers:
-        # - name: sysctl
-        #   securityContext:
-        #     privileged: true
-        #     runAsUser: 0
-        #   command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-        ###
-        # uncomment the line below if you are using a service mesh such as linkerd2 that uses service account tokens for pod identification.
-        # automountServiceAccountToken: true
         containers:
         - name: elasticsearch
-          # specify resource limits and requests
           resources:
             limits:
               memory: 4Gi
               cpu: 1
           env:
-          # uncomment the lines below to make the topology.kubernetes.io/zone annotation available as an environment variable and
-          # use it as a cluster routing allocation attribute.
-          #- name: ZONE
-          #  valueFrom:
-          #    fieldRef:
-          #      fieldPath: metadata.annotations['topology.kubernetes.io/zone']
           - name: ES_JAVA_OPTS
             value: "-Xms2g -Xmx2g"
-        #topologySpreadConstraints:
-        #  - maxSkew: 1
-        #    topologyKey: topology.kubernetes.io/zone
-        #    whenUnsatisfiable: DoNotSchedule
-        #    labelSelector:
-        #      matchLabels:
-        #        elasticsearch.k8s.elastic.co/cluster-name: ${var.elasticsearch_name}
-        #        elasticsearch.k8s.elastic.co/statefulset-name: ${var.elasticsearch_name}-es-default
-  #   # request 2Gi of persistent data storage for pods in this topology element
-  #   volumeClaimTemplates:
-  #   - metadata:
-  #       name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
-  #     spec:
-  #       accessModes:
-  #       - ReadWriteOnce
-  #       resources:
-  #         requests:
-  #           storage: 2Gi
-  #       storageClassName: standard
+    # volumeClaimTemplates:
+    # - metadata:
+    #     name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
+    #   spec:
+    #     accessModes:
+    #     - ReadWriteOnce
+    #     resources:
+    #       requests:
+    #         storage: 2Gi
+    #     storageClassName: standard
   # # inject secure settings into Elasticsearch nodes from k8s secrets references
   # secureSettings:
   # - secretName: ref-to-secret
@@ -85,21 +51,20 @@ spec:
   #   entries:
   #   - key: value1
   #     path: newkey # project a key to a specific path (optional)
-  # http:
-  #   service:
-  #     spec:
-  #       # expose this cluster Service with a LoadBalancer
-  #       type: LoadBalancer
-  #   tls:
-  #     selfSignedCertificate:
-  #       # add a list of SANs into the self-signed HTTP certificate
-  #       subjectAltNames:
-  #       - ip: 192.168.1.2
-  #       - ip: 192.168.1.3
-  #       - dns: ${var.elasticsearch_name}.example.com
-  #     certificate:
-  #       # provide your own certificate
-  #       secretName: my-cert
+  http:
+    # service:
+    #   spec:
+    #     type: LoadBalancer
+    tls:
+      selfSignedCertificate:
+        subjectAltNames:
+        - ip: 127.0.0.1
+        - dns: localhost
+        - dns: "${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc"
+        - dns: "${var.elasticsearch_ingress_hostname}"
+      # certificate:
+      #   # provide your own certificate
+      #   secretName: ${var.elasticsearch_name}-es-http-certs-public
 YAML
 }
 
@@ -112,12 +77,19 @@ metadata:
   name: elasticsearch-ingress
   namespace: ${var.eck_namespace}
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/issuer: selfsigned
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/ssl-services: "${var.elasticsearch_name}-es-http"
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # cert-manager.io/issuer: selfsigned
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - ${var.elasticsearch_ingress_hostname}
+    secretName: ${var.elasticsearch_name}-es-http-certs-public
   rules:
     - host: ${var.elasticsearch_ingress_hostname}
       http:
@@ -128,11 +100,6 @@ spec:
               service:
                 name: ${var.elasticsearch_name}-es-http
                 port:
-                  number: 9200
-  # Enable for Air-Gapped EPR
-  tls:
-   - secretName: ${var.elasticsearch_name}-es-http-certs-public
-     hosts:
-        - ${var.elasticsearch_ingress_hostname}       
+                  number: 9200   
 YAML
 }

@@ -13,8 +13,18 @@ spec:
   elasticsearchRef:
     name: ${var.elasticsearch_name}
   config:
+    server.publicBaseUrl: https://${var.kibana_ingress_hostname}
+    # telemetry.enabled: false
+
     xpack.fleet.registryUrl: "http://elastic-package-registry.${var.registry_namespace}.svc:8080"
+    # xpack.fleet.registryUrl: "http://${var.elastic_package_registry_ingress_hostname}"
+    # xpack.fleet.agents.enabled: true
+
     xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}","https://${var.fleet_server_name}-agent-http.${var.eck_namespace}.svc:8220"]
+    # xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}"]
+
+    # xpack.fleet.agents.elasticsearch.hosts: ["https://${var.elasticsearch_ingress_hostname}","https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
+    # xpack.fleet.agents.elasticsearch.hosts: ["https://${var.elasticsearch_ingress_hostname}"]
     xpack.fleet.outputs:
       - id: external-elasticsearch-output
         name: default
@@ -33,10 +43,11 @@ spec:
         version: latest
       - name: fleet_server
         version: latest
+
     xpack.fleet.agentPolicies:
       - name: Fleet Server on ECK policy
         id: eck-fleet-server
-        namespace: ${var.eck_namespace}
+        namespace: default
         monitoring_enabled:
           - logs
           - metrics
@@ -46,9 +57,19 @@ spec:
           id: fleet_server-1
           package:
             name: fleet_server
+        # - package:
+        #     name: apm
+        #   name: apm-1
+        #   inputs:
+        #   - type: apm
+        #     enabled: true
+        #     vars:
+        #     - name: host
+        #       value: 0.0.0.0:8200
+  
       - name: Elastic Agent on ECK policy
         id: eck-agent
-        namespace: ${var.eck_namespace}
+        namespace: default
         monitoring_enabled:
           - logs
           - metrics
@@ -58,11 +79,18 @@ spec:
             id: system-1
             package:
               name: system
-    server.publicBaseUrl: https://${var.kibana_ingress_hostname}
-  #http:
-  #  service:
-  #    spec:
-  #      type: LoadBalancer
+  http:
+    # service:
+    #   spec:
+    #     type: LoadBalancer
+    tls:
+      selfSignedCertificate:
+        subjectAltNames:
+        - ip: 127.0.0.1
+        - dns: localhost
+        - dns: "${var.kibana_name}-kb-http.${var.eck_namespace}.svc"
+        - dns: "${var.kibana_ingress_hostname}"
+
   # this shows how to customize the Kibana pod
   # with labels and resource limits
   podTemplate:
@@ -88,12 +116,19 @@ metadata:
   name: elastic-kibana-ingress
   namespace: ${var.eck_namespace}
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/issuer: selfsigned
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/ssl-services: "${var.kibana_name}-kb-http"
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # cert-manager.io/issuer: selfsigned
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - ${var.kibana_ingress_hostname} 
+    secretName: ${var.kibana_name}-kb-http-certs-public
   rules:
     - host: ${var.kibana_ingress_hostname}
       http:
@@ -105,11 +140,6 @@ spec:
                 name: ${var.kibana_name}-kb-http
                 port:
                   number: 5601
-  # Enable for Air-Gapped EPR
-  tls:
-   - secretName: ${var.kibana_name}-kb-http-certs-public
-     hosts:
-        - ${var.kibana_ingress_hostname}       
 YAML
 }
 

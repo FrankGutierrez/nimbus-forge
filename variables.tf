@@ -131,7 +131,7 @@ variable "elasticsearch_ingress_hostname" {
 variable "elasticsearch_node_count" {
   description   = "Number of Elasticsearch Nodes"
   type          = number
-  default       = 1
+  default       = 3
 }
 
 variable "elasticsearch_node_store_allow_mmap" {
@@ -156,7 +156,7 @@ variable "kibana_image" {
 variable "kibana_node_count" {
   description   = "Number of Elasticsearch Nodes"
   type          = number
-  default       = 1
+  default       = 2
 }
 
 variable "kibana_ingress_hostname" {

@@ -19,7 +19,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: elastic-operator
-  namespace:  ${var.eck_namespace}
+  namespace: ${var.eck_namespace}
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}

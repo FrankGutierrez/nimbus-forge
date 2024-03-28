@@ -29,13 +29,13 @@ elasticsearch_elastic_user_password = "ChangeMeElastic123"
 # elasticsearch_name = "elasticsearch-sample"
 # elasticsearch_image = "docker.elastic.co/elasticsearch/elasticsearch:8.12.2"
 elasticsearch_ingress_hostname = "es.k8s.internal"
-# elasticsearch_node_count = 1
+elasticsearch_node_count = 1
 
 ##### Kibana Settings #####
 # kibana_name = "kibana-sample"
 # kibana_image = "docker.elastic.co/kibana/kibana:8.12.2"
 kibana_ingress_hostname = "kb.k8s.internal"
-# kibana_node_count = 1
+kibana_node_count = 1
 
 ##### Fleet Server Settings #####
 # fleet_server_name = "eck-fleet-server"

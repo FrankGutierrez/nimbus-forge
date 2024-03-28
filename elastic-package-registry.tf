@@ -84,7 +84,7 @@ metadata:
   name: elastic-package-registry-ingress
   namespace: ${var.registry_namespace}
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/backend-protocol: "http"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
