@@ -59,12 +59,12 @@ spec:
       selfSignedCertificate:
         subjectAltNames:
         - ip: 127.0.0.1
-        - dns: localhost
-        - dns: "${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc"
         - dns: "${var.elasticsearch_ingress_hostname}"
+        - dns: "${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc"
+        - dns: localhost
       # certificate:
       #   # provide your own certificate
-      #   secretName: ${var.elasticsearch_name}-es-http-certs-public
+      #   secretName: ${var.elasticsearch_name}-es-http-certs-internal
 YAML
 }
 
@@ -77,7 +77,7 @@ metadata:
   name: elasticsearch-ingress
   namespace: ${var.eck_namespace}
   annotations:
-    # nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.org/ssl-services: "${var.elasticsearch_name}-es-http"
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "https"
@@ -89,7 +89,7 @@ spec:
   tls:
   - hosts:
     - ${var.elasticsearch_ingress_hostname}
-    secretName: ${var.elasticsearch_name}-es-http-certs-public
+    secretName: ${var.elasticsearch_name}-es-http-certs-internal
   rules:
     - host: ${var.elasticsearch_ingress_hostname}
       http:

@@ -23,8 +23,6 @@ spec:
     xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}","https://${var.fleet_server_name}-agent-http.${var.eck_namespace}.svc:8220"]
     # xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}"]
 
-    # xpack.fleet.agents.elasticsearch.hosts: ["https://${var.elasticsearch_ingress_hostname}","https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
-    # xpack.fleet.agents.elasticsearch.hosts: ["https://${var.elasticsearch_ingress_hostname}"]
     xpack.fleet.outputs:
       - id: external-elasticsearch-output
         name: default
@@ -87,9 +85,9 @@ spec:
       selfSignedCertificate:
         subjectAltNames:
         - ip: 127.0.0.1
-        - dns: localhost
-        - dns: "${var.kibana_name}-kb-http.${var.eck_namespace}.svc"
         - dns: "${var.kibana_ingress_hostname}"
+        - dns: "${var.kibana_name}-kb-http.${var.eck_namespace}.svc"
+        - dns: localhost
 
   # this shows how to customize the Kibana pod
   # with labels and resource limits
@@ -128,7 +126,7 @@ spec:
   tls:
   - hosts:
     - ${var.kibana_ingress_hostname} 
-    secretName: ${var.kibana_name}-kb-http-certs-public
+    secretName: ${var.kibana_name}-kb-http-certs-internal
   rules:
     - host: ${var.kibana_ingress_hostname}
       http:

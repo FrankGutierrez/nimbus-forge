@@ -23,6 +23,14 @@ spec:
         automountServiceAccountToken: true
         securityContext:
           runAsUser: 0 
+  # http:
+  #   tls:
+  #     selfSignedCertificate:
+  #       subjectAltNames:
+  #       - ip: 127.0.0.1
+  #       - dns: "${var.fleet_server_ingress_hostname}"
+  #       - dns: "${var.fleet_server_name}-agent-http.${var.eck_namespace}.svc"
+  #       - dns: localhost
 YAML
 }
 
@@ -144,7 +152,7 @@ spec:
   tls:
   - hosts:
     - ${var.fleet_server_ingress_hostname} 
-    secretName: ${var.fleet_server_name}-agent-http-certs-public  
+    secretName: ${var.fleet_server_name}-agent-http-certs-internal  
   rules:
     - host: ${var.fleet_server_ingress_hostname}
       http:
