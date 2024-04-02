@@ -14,26 +14,30 @@ spec:
     name: ${var.elasticsearch_name}
   config:
     server.publicBaseUrl: https://${var.kibana_ingress_hostname}
-    # telemetry.enabled: false
-
+    
     xpack.fleet.registryUrl: "http://elastic-package-registry.${var.registry_namespace}.svc:8080"
     # xpack.fleet.registryUrl: "http://${var.elastic_package_registry_ingress_hostname}"
-    # xpack.fleet.agents.enabled: true
 
-    xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}","https://${var.fleet_server_name}-agent-http.${var.eck_namespace}.svc:8220"]
-    # xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}"]
+    # xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}","https://${var.fleet_server_name}-agent-http.${var.eck_namespace}.svc:8220"]
+    xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}"]
 
     xpack.fleet.outputs:
       - id: external-elasticsearch-output
         name: default
         type: elasticsearch
+        hosts: ["https://${var.elasticsearch_ingress_hostname}"]
         is_default: true
         is_default_monitoring: true
-        hosts: ["https://${var.elasticsearch_ingress_hostname}"]
+        ssl:
+          certificate: ${var.elasticsearch_name}-es-http-certs-public
+        secrets:
+          ssl:
+            key: ${var.elasticsearch_name}-es-http-ca-internal
       - id: internal-elasticsearch-output
         name: Internal Output
         type: elasticsearch
         hosts: ["https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
+        is_internal: true
     xpack.fleet.packages:
       - name: system
         version: latest
@@ -118,6 +122,7 @@ metadata:
     nginx.org/ssl-services: "${var.kibana_name}-kb-http"
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "https"
+
     # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # cert-manager.io/issuer: selfsigned

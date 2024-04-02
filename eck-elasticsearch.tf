@@ -81,6 +81,7 @@ metadata:
     nginx.org/ssl-services: "${var.elasticsearch_name}-es-http"
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "https"
+
     # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # cert-manager.io/issuer: selfsigned
