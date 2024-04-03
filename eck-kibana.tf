@@ -28,16 +28,16 @@ spec:
         hosts: ["https://${var.elasticsearch_ingress_hostname}"]
         is_default: true
         is_default_monitoring: true
-        ssl:
-          certificate: ${var.elasticsearch_name}-es-http-certs-public
-        secrets:
-          ssl:
-            key: ${var.elasticsearch_name}-es-http-ca-internal
+        # ssl:
+        #   certificate: ${var.elasticsearch_name}-es-http-certs-public
+        # secrets:
+        #   ssl:
+        #     key: ${var.elasticsearch_name}-es-http-ca-internal
       - id: internal-elasticsearch-output
         name: Internal Output
         type: elasticsearch
         hosts: ["https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
-        is_internal: true
+        # is_internal: true
     xpack.fleet.packages:
       - name: system
         version: latest
