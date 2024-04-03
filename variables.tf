@@ -183,3 +183,9 @@ variable "fleet_server_ingress_hostname" {
   type          = string
   default       = "fleet-server.localhost"
 }
+
+variable "elastic_agent_image" {
+  description   = "Docker image URL for Elastic Agent"
+  type          = string
+  default       = "docker.elastic.co/beats/elastic-agent:8.12.2"
+}

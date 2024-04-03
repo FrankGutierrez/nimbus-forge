@@ -1,6 +1,6 @@
-resource "kubectl_manifest" "fleet-server-agent" {
-    depends_on = [kubectl_manifest.kibana]
-    yaml_body = <<YAML
+resource "kubectl_manifest" "fleet_server_agent" {
+  depends_on = [kubectl_manifest.kibana]
+  yaml_body = <<YAML
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
@@ -24,7 +24,7 @@ spec:
         labels:
           deployment: terraform
       spec:
-        serviceAccountName: elastic-agent
+        serviceAccountName: fleet-server
         automountServiceAccountToken: true
         securityContext:
           runAsUser: 0 
@@ -39,9 +39,9 @@ spec:
 YAML
 }
 
-resource "kubectl_manifest" "elastic-agent" {
-    depends_on = [kubectl_manifest.fleet-server-agent]
-    yaml_body = <<YAML
+resource "kubectl_manifest" "elastic_agent" {
+  depends_on = [kubectl_manifest.fleet_server_agent]
+  yaml_body = <<YAML
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
@@ -64,18 +64,94 @@ spec:
           deployment: terraform
       spec:
         serviceAccountName: elastic-agent
+        hostNetwork: true
+        dnsPolicy: ClusterFirstWithHostNet
         automountServiceAccountToken: true
         securityContext:
-          runAsUser: 0 
+          runAsUser: 0
         volumes:
         - name: agent-data
           emptyDir: {}
 YAML
 }
 
-resource "kubectl_manifest" "fleet-server-cluster-role" {
-    depends_on = [kubectl_manifest.elastic-agent]
-    yaml_body = <<YAML
+resource "kubectl_manifest" "fleet_server_cluster_role" {
+  depends_on = [kubectl_manifest.elastic_agent]
+  yaml_body = <<YAML
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fleet-server
+  labels:
+    deployment: terraform
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  - namespaces
+  - nodes
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups: ["apps"]
+  resources:
+    - replicasets
+  verbs:
+    - get
+    - watch
+    - list
+- apiGroups: ["batch"]
+  resources:
+    - jobs
+  verbs:
+    - get
+    - watch
+    - list
+- apiGroups: ["coordination.k8s.io"]
+  resources:
+  - leases
+  verbs:
+  - get
+  - create
+  - update
+YAML
+}
+
+resource "kubectl_manifest" "fleet_server_serviceAccount" {
+  depends_on = [kubectl_manifest.fleet_server_cluster_role]
+  yaml_body = <<YAML
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fleet-server
+  namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
+YAML
+}
+
+resource "kubectl_manifest" "fleet_server_clusterRoleBinding" {
+  depends_on = [kubectl_manifest.fleet_server_serviceAccount]
+  yaml_body = <<YAML
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: fleet-server
+subjects:
+- kind: ServiceAccount
+  name: fleet-server
+  namespace: ${var.eck_namespace}
+roleRef:
+  kind: ClusterRole
+  name: fleet-server
+  apiGroup: rbac.authorization.k8s.io
+YAML
+}
+
+resource "kubectl_manifest" "elastic_agent_cluster_role" {
+  depends_on = [kubectl_manifest.elastic_agent]
+  yaml_body = <<YAML
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -83,11 +159,14 @@ metadata:
   labels:
     deployment: terraform
 rules:
-- apiGroups: [""] # "" indicates the core API group
+- apiGroups: [""]
   resources:
   - pods
   - nodes
   - namespaces
+  - events
+  - services
+  - configmaps
   verbs:
   - get
   - watch
@@ -99,24 +178,47 @@ rules:
   - get
   - create
   - update
-- apiGroups: ["apps"]
+- nonResourceURLs:
+  - "/metrics"
+  verbs:
+  - get
+- apiGroups: ["extensions"]
   resources:
+    - replicasets
+  verbs: 
+  - "get"
+  - "list"
+  - "watch"
+- apiGroups:
+  - "apps"
+  resources:
+  - statefulsets
+  - deployments
   - replicasets
   verbs:
-  - list
-  - watch
-- apiGroups: ["batch"]
+  - "get"
+  - "list"
+  - "watch"
+- apiGroups:
+  - ""
+  resources:
+  - nodes/stats
+  verbs:
+  - get
+- apiGroups:
+  - "batch"
   resources:
   - jobs
   verbs:
-  - list
-  - watch
+  - "get"
+  - "list"
+  - "watch"
 YAML
 }
 
-resource "kubectl_manifest" "fleet-server-serviceAccount" {
-    depends_on = [kubectl_manifest.fleet-server-cluster-role]
-    yaml_body = <<YAML
+resource "kubectl_manifest" "elastic_agent_serviceAccount" {
+  depends_on = [kubectl_manifest.elastic_agent_cluster_role]
+  yaml_body = <<YAML
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -127,9 +229,9 @@ metadata:
 YAML
 }
 
-resource "kubectl_manifest" "fleet-server-clusterRoleBinding" {
-    depends_on = [kubectl_manifest.fleet-server-serviceAccount]
-    yaml_body = <<YAML
+resource "kubectl_manifest" "elastic_agent_clusterRoleBinding" {
+  depends_on = [kubectl_manifest.elastic_agent_serviceAccount]
+  yaml_body = <<YAML
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -147,8 +249,8 @@ roleRef:
 YAML
 }
 
-resource "kubectl_manifest" "elastic-fleet_server_ingress" {
-  depends_on = [kubectl_manifest.fleet-server-clusterRoleBinding]
+resource "kubectl_manifest" "elastic_fleet_server_ingress" {
+  depends_on = [kubectl_manifest.elastic_agent_clusterRoleBinding]
   yaml_body = <<YAML
 kind: Ingress
 apiVersion: networking.k8s.io/v1

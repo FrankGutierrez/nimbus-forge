@@ -41,3 +41,4 @@ kibana_node_count = 1
 # fleet_server_name = "eck-fleet-server"
 # elastic_agent_name = "eck-elastic-agent"
 fleet_server_ingress_hostname = "fleet-server.k8s.internal"
+# elastic_agent_image = "docker.elastic.co/beats/elastic-agent:8.12.2"

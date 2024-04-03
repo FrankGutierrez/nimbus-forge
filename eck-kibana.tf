@@ -23,59 +23,62 @@ spec:
     xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}"]
 
     xpack.fleet.outputs:
-      - id: external-elasticsearch-output
-        name: default
-        type: elasticsearch
-        hosts: ["https://${var.elasticsearch_ingress_hostname}"]
-        is_default: true
-        is_default_monitoring: true
-      - id: internal-elasticsearch-output
-        name: Internal Output
-        type: elasticsearch
-        hosts: ["https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
+    - id: external-elasticsearch-output
+      name: default
+      type: elasticsearch
+      hosts: ["https://${var.elasticsearch_ingress_hostname}"]
+      is_default: true
+      is_default_monitoring: true
+    - id: internal-elasticsearch-output
+      name: Internal Output
+      type: elasticsearch
+      hosts: ["https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
     xpack.fleet.packages:
-      - name: system
-        version: latest
-      - name: elastic_agent
-        version: latest
-      - name: fleet_server
-        version: latest
+    - name: system
+      version: latest
+    - name: elastic_agent
+      version: latest
+    - name: fleet_server
+      version: latest
+    - name: kubernetes
+      version: latest
 
     xpack.fleet.agentPolicies:
-      - name: Fleet Server on ECK policy
-        id: eck-fleet-server
-        namespace: default
-        monitoring_enabled:
-          - logs
-          - metrics
-        unenroll_timeout: 900
-        package_policies:
-        - name: fleet_server-1
-          id: fleet_server-1
-          package:
-            name: fleet_server
-        # - package:
-        #     name: apm
-        #   name: apm-1
-        #   inputs:
-        #   - type: apm
-        #     enabled: true
-        #     vars:
-        #     - name: host
-        #       value: 0.0.0.0:8200
+    - name: Fleet Server on ECK policy
+      id: eck-fleet-server
+      namespace: default
+      monitoring_enabled:
+        - logs
+        - metrics
+      unenroll_timeout: 900
+      package_policies:
+      - name: fleet_server-1
+        id: fleet_server-1
+        package:
+          name: fleet_server
   
-      - name: Elastic Agent on ECK policy
-        id: eck-agent
-        namespace: default
-        monitoring_enabled:
-          - logs
-          - metrics
-        unenroll_timeout: 900
-        package_policies:
-          - name: system-1
-            id: system-1
-            package:
-              name: system
+    - name: Elastic Agent on ECK policy
+      id: eck-agent
+      namespace: default
+      monitoring_enabled:
+      - logs
+      - metrics
+      unenroll_timeout: 900
+      package_policies:
+      # - name: kubernetes-1
+      #   id: kubernetes-1
+      #   package:
+      #     name: kubernetes
+      # - name: system-1
+      #   id: system-1
+      #   package:
+      #     name: system
+      - package:
+          name: system
+        name: system-1
+      - package:
+          name: kubernetes
+        name: kubernetes-1
   http:
     # service:
     #   spec:
