@@ -6,6 +6,8 @@ kind: Kibana
 metadata:
   name: ${var.kibana_name}
   namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
 spec:
   version: ${var.elastic_version}
   image: ${var.kibana_image}
@@ -18,7 +20,6 @@ spec:
     xpack.fleet.registryUrl: "http://elastic-package-registry.${var.registry_namespace}.svc:8080"
     # xpack.fleet.registryUrl: "http://${var.elastic_package_registry_ingress_hostname}"
 
-    # xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}","https://${var.fleet_server_name}-agent-http.${var.eck_namespace}.svc:8220"]
     xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}"]
 
     xpack.fleet.outputs:
@@ -28,16 +29,10 @@ spec:
         hosts: ["https://${var.elasticsearch_ingress_hostname}"]
         is_default: true
         is_default_monitoring: true
-        # ssl:
-        #   certificate: ${var.elasticsearch_name}-es-http-certs-public
-        # secrets:
-        #   ssl:
-        #     key: ${var.elasticsearch_name}-es-http-ca-internal
       - id: internal-elasticsearch-output
         name: Internal Output
         type: elasticsearch
         hosts: ["https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
-        # is_internal: true
     xpack.fleet.packages:
       - name: system
         version: latest
@@ -117,6 +112,8 @@ apiVersion: networking.k8s.io/v1
 metadata:
   name: elastic-kibana-ingress
   namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.org/ssl-services: "${var.kibana_name}-kb-http"
@@ -161,6 +158,7 @@ metadata:
     eck.k8s.elastic.co/owner-name: ${var.elasticsearch_name}
     eck.k8s.elastic.co/owner-namespace: ${var.eck_namespace}
     elasticsearch.k8s.elastic.co/cluster-name: ${var.elasticsearch_name}
+    deployment: terraform
   managedFields:
     - manager: elastic-operator
       operation: Update

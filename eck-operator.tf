@@ -8,6 +8,7 @@ metadata:
   name: ${var.eck_namespace}
   labels:
     name: ${var.eck_namespace}
+    deployment: terraform
 YAML
 }
 
@@ -23,6 +24,7 @@ metadata:
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 YAML
 }
 
@@ -38,6 +40,7 @@ metadata:
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 YAML
 }
 
@@ -53,6 +56,7 @@ metadata:
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 data:
   eck.yaml: |-
     log-verbosity: 0
@@ -92,6 +96,7 @@ metadata:
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 rules:
 - apiGroups:
   - "authorization.k8s.io"
@@ -341,6 +346,7 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 rules:
 - apiGroups: ["elasticsearch.k8s.elastic.co"]
   resources: ["elasticsearches"]
@@ -388,6 +394,7 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 rules:
 - apiGroups: ["elasticsearch.k8s.elastic.co"]
   resources: ["elasticsearches"]
@@ -433,6 +440,7 @@ metadata:
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -456,6 +464,7 @@ metadata:
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 spec:
   ports:
   - name: https
@@ -478,6 +487,7 @@ metadata:
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 spec:
   selector:
     matchLabels:
@@ -563,6 +573,7 @@ metadata:
   labels:
     control-plane: elastic-operator
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
 webhooks:
 - clientConfig:
     service:

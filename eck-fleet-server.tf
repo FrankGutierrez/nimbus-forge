@@ -6,6 +6,8 @@ kind: Agent
 metadata:
   name: ${var.fleet_server_name}
   namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
 spec:
   version: ${var.elastic_version}
   kibanaRef:
@@ -18,6 +20,9 @@ spec:
   deployment:
     replicas: 1
     podTemplate:
+      metadata:
+        labels:
+          deployment: terraform
       spec:
         serviceAccountName: elastic-agent
         automountServiceAccountToken: true
@@ -42,6 +47,8 @@ kind: Agent
 metadata:
   name: ${var.elastic_agent_name}
   namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
 spec:
   version: ${var.elastic_version}
   kibanaRef:
@@ -52,6 +59,9 @@ spec:
   policyID: eck-agent
   daemonSet:
     podTemplate:
+      metadata:
+        labels:
+          deployment: terraform
       spec:
         serviceAccountName: elastic-agent
         automountServiceAccountToken: true
@@ -70,6 +80,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: elastic-agent
+  labels:
+    deployment: terraform
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources:
@@ -110,6 +122,8 @@ kind: ServiceAccount
 metadata:
   name: elastic-agent
   namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
 YAML
 }
 
@@ -120,6 +134,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: elastic-agent
+  labels:
+    deployment: terraform
 subjects:
 - kind: ServiceAccount
   name: elastic-agent
@@ -139,6 +155,8 @@ apiVersion: networking.k8s.io/v1
 metadata:
   name: elastic-fleet-server-ingress
   namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.org/ssl-services: "${var.fleet_server_name}-agent-http"

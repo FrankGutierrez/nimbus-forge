@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: agents.agent.k8s.elastic.co
 spec:
   group: agent.k8s.elastic.co
@@ -647,6 +648,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: apmservers.apm.k8s.elastic.co
 spec:
   group: apm.k8s.elastic.co
@@ -1317,6 +1319,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: beats.beat.k8s.elastic.co
 spec:
   group: beat.k8s.elastic.co
@@ -1630,6 +1633,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: elasticmapsservers.maps.k8s.elastic.co
 spec:
   group: maps.k8s.elastic.co
@@ -1957,6 +1961,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: elasticsearchautoscalers.autoscaling.k8s.elastic.co
 spec:
   group: autoscaling.k8s.elastic.co
@@ -2260,6 +2265,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: elasticsearches.elasticsearch.k8s.elastic.co
 spec:
   group: elasticsearch.k8s.elastic.co
@@ -3792,6 +3798,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: enterprisesearches.enterprisesearch.k8s.elastic.co
 spec:
   group: enterprisesearch.k8s.elastic.co
@@ -4407,6 +4414,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: kibanas.kibana.k8s.elastic.co
 spec:
   group: kibana.k8s.elastic.co
@@ -5125,6 +5133,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: logstashes.logstash.k8s.elastic.co
 spec:
   group: logstash.k8s.elastic.co
@@ -5779,6 +5788,7 @@ metadata:
     app.kubernetes.io/instance: 'elastic-operator'
     app.kubernetes.io/name: 'eck-operator-crds'
     app.kubernetes.io/version: ${var.eck_version}
+    deployment: terraform
   name: stackconfigpolicies.stackconfigpolicy.k8s.elastic.co
 spec:
   group: stackconfigpolicy.k8s.elastic.co

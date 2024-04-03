@@ -6,6 +6,7 @@ metadata:
   name: ${var.registry_namespace}
   labels:
     name: ${var.registry_namespace}
+    deployment: terraform
 YAML
 }
 
@@ -19,6 +20,7 @@ metadata:
   namespace: ${var.registry_namespace}
   labels:
     app: elastic-package-registry
+    deployment: terraform
 spec:
   replicas: 1
   selector:
@@ -62,6 +64,7 @@ kind: Service
 metadata:
   labels:
     app: elastic-package-registry
+    deployment: terraform
   name: elastic-package-registry
   namespace: ${var.registry_namespace}
 spec:
@@ -83,6 +86,8 @@ apiVersion: networking.k8s.io/v1
 metadata:
   name: elastic-package-registry-ingress
   namespace: ${var.registry_namespace}
+  labels:
+    deployment: terraform
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "http"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"

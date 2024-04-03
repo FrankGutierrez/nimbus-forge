@@ -10,6 +10,8 @@ metadata:
   #  eck.k8s.elastic.co/downward-node-labels: "topology.kubernetes.io/zone"
   name: ${var.elasticsearch_name}
   namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
 spec:
   version: ${var.elastic_version}
   image: ${var.elasticsearch_image}
@@ -76,6 +78,8 @@ apiVersion: networking.k8s.io/v1
 metadata:
   name: elasticsearch-ingress
   namespace: ${var.eck_namespace}
+  labels:
+    deployment: terraform
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.org/ssl-services: "${var.elasticsearch_name}-es-http"

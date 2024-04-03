@@ -8,6 +8,7 @@ metadata:
   namespace: ${var.registry_namespace}
   labels:
     app: elastic-artifact-registry
+    deployment: terraform
 spec:
   replicas: 1
   selector:
@@ -45,6 +46,7 @@ metadata:
   namespace: ${var.registry_namespace}
   labels:
     app: elastic-artifact-registry
+    deployment: terraform
   name: elastic-artifact-registry
 spec:
   ports:
@@ -65,6 +67,8 @@ apiVersion: networking.k8s.io/v1
 metadata:
   name: elastic-artifact-registry-ingress
   namespace: ${var.registry_namespace}
+  labels:
+    deployment: terraform
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "http"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
