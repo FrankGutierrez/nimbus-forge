@@ -500,7 +500,7 @@ spec:
         # Rename the fields "error" to "error.message" and "source" to "event.source"
         # This is to avoid a conflict with the ECS "error" and "source" documents.
         "co.elastic.logs/raw": "[{\"type\":\"container\",\"json.keys_under_root\":true,\"paths\":[\"/var/log/containers/*$${data.kubernetes.container.id}.log\"],\"processors\":[{\"convert\":{\"mode\":\"rename\",\"ignore_missing\":true,\"fields\":[{\"from\":\"error\",\"to\":\"_error\"}]}},{\"convert\":{\"mode\":\"rename\",\"ignore_missing\":true,\"fields\":[{\"from\":\"_error\",\"to\":\"error.message\"}]}},{\"convert\":{\"mode\":\"rename\",\"ignore_missing\":true,\"fields\":[{\"from\":\"source\",\"to\":\"_source\"}]}},{\"convert\":{\"mode\":\"rename\",\"ignore_missing\":true,\"fields\":[{\"from\":\"_source\",\"to\":\"event.source\"}]}}]}]"
-        "checksum/config": 052ce1ebc5f534ea096535035722ec268fcdc842b4dd6f2ac502dff91510aaff
+        "checksum/config": 0fc87275536259da5f8e6282b7480909147a488e84264072ea810dabeb755ef9
       labels:
         control-plane: elastic-operator
     spec:

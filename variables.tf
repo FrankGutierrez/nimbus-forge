@@ -31,7 +31,7 @@ variable "registry_namespace" {
 variable "elastic_package_registry_image" {
   description   = "Docker image URL for Elastic Package Registry"
   type          = string
-  default       = "docker.elastic.co/package-registry/distribution:8.12.2"
+  default       = "docker.elastic.co/package-registry/distribution:8.13.1"
 }
 
 variable "elastic_package_registry_image_pull_policy" {
@@ -69,13 +69,19 @@ variable "elastic_artifact_registry_ingress_hostname" {
 variable "eck_version" {
   description   = "ECK Version"
   type          = string
-  default       = "2.11.1"
+  default       = "2.12.1"
 }
 
 variable "elastic_version" {
   description   = "Elastic Version"
   type          = string
-  default       = "8.12.2"
+  default       = "8.13.1"
+}
+
+variable "kubebuilder_version" {
+  description   = "Kubebuilder Version"
+  type          = string
+  default       = "v0.14.0"
 }
 
 variable "eck_namespace" {
@@ -93,7 +99,7 @@ variable "eck_operator_container_registry" {
 variable "eck_operator_image" {
   description   = "Docker image URL for ECK Operator"
   type          = string
-  default       = "docker.elastic.co/eck/eck-operator:2.11.1"
+  default       = "docker.elastic.co/eck/eck-operator:2.12.1"
 }
 
 variable "eck_operator_pull_policy" {
@@ -119,7 +125,7 @@ variable "elasticsearch_name" {
 variable "elasticsearch_image" {
   description   = "Docker image URL for Elasticsearch"
   type          = string
-  default       = "docker.elastic.co/elasticsearch/elasticsearch:8.12.2"
+  default       = "docker.elastic.co/elasticsearch/elasticsearch:8.13.1"
 }
 
 variable "elasticsearch_ingress_hostname" {
@@ -150,7 +156,7 @@ variable "kibana_name" {
 variable "kibana_image" {
   description   = "Docker image URL for Kibana"
   type          = string
-  default       = "docker.elastic.co/kibana/kibana:8.12.2"
+  default       = "docker.elastic.co/kibana/kibana:8.13.1"
 }
 
 variable "kibana_node_count" {
@@ -187,5 +193,5 @@ variable "fleet_server_ingress_hostname" {
 variable "elastic_agent_image" {
   description   = "Docker image URL for Elastic Agent"
   type          = string
-  default       = "docker.elastic.co/beats/elastic-agent:8.12.2"
+  default       = "docker.elastic.co/beats/elastic-agent:8.13.1"
 }

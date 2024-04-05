@@ -17,11 +17,12 @@ spec:
   config:
     server.publicBaseUrl: https://${var.kibana_ingress_hostname}
     
+    #### Set to use local Elastic Package Registry
     xpack.fleet.registryUrl: "http://elastic-package-registry.${var.registry_namespace}.svc:8080"
     # xpack.fleet.registryUrl: "http://${var.elastic_package_registry_ingress_hostname}"
 
-    xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}"]
 
+    xpack.fleet.agents.fleet_server.hosts: ["https://${var.fleet_server_ingress_hostname}"]
     xpack.fleet.outputs:
     - id: external-elasticsearch-output
       name: default
@@ -65,14 +66,6 @@ spec:
       - metrics
       unenroll_timeout: 900
       package_policies:
-      # - name: kubernetes-1
-      #   id: kubernetes-1
-      #   package:
-      #     name: kubernetes
-      # - name: system-1
-      #   id: system-1
-      #   package:
-      #     name: system
       - package:
           name: system
         name: system-1
@@ -80,9 +73,6 @@ spec:
           name: kubernetes
         name: kubernetes-1
   http:
-    # service:
-    #   spec:
-    #     type: LoadBalancer
     tls:
       selfSignedCertificate:
         subjectAltNames:

@@ -47,10 +47,10 @@ spec:
           resources:
             requests:
               cpu: 125m
-              memory: 1Gi
+              memory: 2Gi
             limits:
               cpu: 1000m
-              memory: 1Gi
+              memory: 2Gi
           env:
             - name: EPR_ADDRESS
               value: "0.0.0.0:8080"
