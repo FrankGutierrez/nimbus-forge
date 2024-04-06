@@ -34,10 +34,6 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "http"
 spec:
   ingressClassName: nginx
-#   tls:
-#   - hosts:
-#     - ${var.apm_server_ingress_hostname} 
-#     secretName: ${var.fleet_server_name}-agent-http-certs-internal  
   rules:
     - host: ${var.apm_server_ingress_hostname}
       http:

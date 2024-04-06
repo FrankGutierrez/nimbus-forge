@@ -69,6 +69,8 @@ spec:
           vars:
           - name: host
             value: 0.0.0.0:8200
+          - name: url
+            value: "http://${var.apm_server_ingress_hostname}"
 
     - name: Elastic Agent on ECK policy
       id: eck-agent
