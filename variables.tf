@@ -178,6 +178,12 @@ variable "fleet_server_name" {
   default       = "eck-fleet-server"
 }
 
+variable "apm_server_name" {
+  description   = "Name of APM Server deployment"
+  type          = string
+  default       = "eck-apm-server"
+}
+
 variable "elastic_agent_name" {
   description   = "Name of Elastic Agent deployment"
   type          = string
@@ -188,6 +194,12 @@ variable "fleet_server_ingress_hostname" {
   description   = "Fleet Server ingress Hostname"
   type          = string
   default       = "fleet-server.localhost"
+}
+
+variable "apm_server_ingress_hostname" {
+  description   = "APM Server ingress Hostname"
+  type          = string
+  default       = "apm.localhost"
 }
 
 variable "elastic_agent_image" {
