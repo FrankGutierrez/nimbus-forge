@@ -34,12 +34,15 @@ spec:
       name: Internal Output
       type: elasticsearch
       hosts: ["https://${var.elasticsearch_name}-es-http.${var.eck_namespace}.svc:9200"]
+    
     xpack.fleet.packages:
     - name: system
       version: latest
     - name: elastic_agent
       version: latest
     - name: fleet_server
+      version: latest
+    - name: apm
       version: latest
     - name: kubernetes
       version: latest
@@ -57,7 +60,16 @@ spec:
         id: fleet_server-1
         package:
           name: fleet_server
-  
+      - name: apm-1
+        package:
+          name: apm
+        inputs:
+        - type: apm
+          enabled: true
+          vars:
+          - name: host
+            value: 0.0.0.0:8200
+
     - name: Elastic Agent on ECK policy
       id: eck-agent
       namespace: default
@@ -66,12 +78,14 @@ spec:
       - metrics
       unenroll_timeout: 900
       package_policies:
-      - package:
+      - name: system-1
+        id: system-1
+        package:
           name: system
-        name: system-1
-      - package:
+      - name: kubernetes-1
+        package:
           name: kubernetes
-        name: kubernetes-1
+
   http:
     tls:
       selfSignedCertificate:
